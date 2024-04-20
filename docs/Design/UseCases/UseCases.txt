@@ -1,0 +1,103 @@
+@startuml
+
+skinparam actorStyle awesome
+left to right direction
+
+actor "Client" as cla
+actor "Developer" as dev
+actor "Manager" as man
+
+package "Client Relation" {
+
+
+    package "Project" {
+        usecase "Create Project"
+        usecase "Archive Project"
+        usecase "Update Project"
+        usecase "Remove Project"
+    }
+
+    package "Client" {
+        usecase "Add Client"
+        usecase "Update Client Info"
+        usecase "Disable Client"
+        usecase "Remove Client"
+    }
+
+    package "Contact" {
+        usecase "Add client contact"
+        usecase "Update client contact"
+        usecase "Remove client contact"
+    }
+    package "Invoice" {
+        usecase "Create invoice from time entries"
+        usecase "Create project estimate"
+        usecase "Update invoice details"
+        usecase "Send invoice"
+        usecase "Pay invoice"
+        usecase "Mark invoice paid"
+        usecase "Delete invoice"
+        usecase "Generate by client report"
+        usecase "Generate yearly revenue report"
+        usecase "Generate monthly revenue report"
+    }
+
+    package "Invoice Item" {
+        usecase "Add invoice item"
+        usecase "Update invoice item"
+        usecase "Remove invoice item"
+    }
+}
+
+package "Issue Tracking" {
+    package "Issue" {
+        usecase "Create issue for project"
+        usecase "Update issue details"
+        usecase "Add issue comment"
+        usecase "Edit issue comment"
+        usecase "Remove issue comment"
+        usecase "Assign labels"
+        usecase "Assign components"
+        usecase "Assign developer"
+        usecase "Associate pull request"
+        usecase "Set status to closed"
+    }
+    package "Label" {
+        usecase "Create new label"
+        usecase "Rename label"
+        usecase "Update label description"
+        usecase "Delete label"
+    }
+    package "Component" {
+        usecase "Add project component"
+        usecase "Update component details"
+        usecase "Remove component"
+    }
+}
+
+package "Time Tracking" {
+    package "TimeEntry" {
+        usecase "Start recording time for project issue with activity"
+        usecase "Stop recording time"
+        usecase "Restart last activity"
+        usecase "Manually edit times"
+        usecase "Update entry description"
+    }
+    package "Activity" {
+        usecase "Add global activity"
+        usecase "Add project activity"
+        usecase "Update activity description"
+        usecase "Set activity price per project"
+        usecase "Set global acitivty price"
+    }
+    package "User" {
+        usecase "Login"
+        usecase "Logout"
+        usecase "Reset password"
+        usecase "Change password"
+        usecase "Set profile info"
+        usecase "Set application theme"
+    }
+}
+
+@enduml

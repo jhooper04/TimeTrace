@@ -1,0 +1,170 @@
+@startuml
+' hide the spot
+' hide circle
+' avoid problems with angled crows feet
+skinparam linetype ortho
+
+entity "TimeEntry" as te {
+    *Id : int <<generated>>
+    --
+    *ProjectId : int <<FK>>
+    *ActivityId : int <<FK>>
+    *ContractorId : int <<FK>>
+    IssueId : int <<FK>>
+    Begin : Timestamp
+    End : Timestamp
+    Details : text
+    InternalPrice : decimal
+    Price: decimal
+}
+
+entity "Issue" as i {
+    *Id : int <<generated>>
+    --
+    *ProjectId : int <<FK>>
+    *CreatedById : int <<FK>>
+    AssignedToId : int <<FK>>
+    ComponentId : int <<FK>>
+    Status : text
+    Title: text
+    Description : text
+    Color : text
+    Type : text
+    CreatedDate : Timestamp
+    UpdatedDate : Timestamp
+    ClosedDate : Timestamp
+}
+
+entity "Label" as l {
+    *Id : int <<generated>>
+    --
+    ProjectId : int <<FK>>
+    Name : text
+    Description : text
+    Color : text
+}
+
+entity "Project" as p {
+    *Id : number <<generated>>
+    --
+    *ClientId : int <<FK>>
+    *Name : text
+    Description : text
+    Color : text
+    ProjectNumber : text
+    OrderNumber : text
+    OrderDate : DateTime
+    ProjectBegin : DateTime
+    ProjectEnd : DateTime
+    BudgetAmount : decimal
+    BudgetHours : decimal
+}
+
+entity "Component" as cp {
+    *Id : number <<generated>>
+    --
+    *ProjectId : int <<FK>>
+    *Name : text
+    Description : text
+    BudgetAmount : decimal
+    BudgetHours : decimal
+    Color : text
+}
+
+entity "Client" as c {
+    *Id : int <<generated>>
+    --
+    Name : text
+    Color : text
+    BusinessName : text
+    BillingStreet : text
+    BillingCity : text
+    BillingState : text
+    BillingZip : text
+    AccountNumber : text
+}
+
+entity "Contact" as cc {
+    *Id : int <<generated>>
+    --
+    *ClientId : int <<FK>>
+    FirstName: text
+    LastName: text
+    Street : text
+    City : text
+    State : text
+    Zip : text
+    Mobile : text
+    Phone : text
+    Fax : text
+    Email : text
+}
+
+entity "Activity" as a {
+    *Id : int <<generated>>
+    --
+    ClientId : int <<FK>>
+    ProjectId : int <<FK>>
+    Name : text
+    Description : text
+    Color : text
+    ActivityNumber : text
+    BudgetAmount : decimal
+    BudgetHours : decimal
+    InvoiceText : text
+}
+
+entity "User" as u {
+    *Id : int <<generated>>
+    --
+    Name : text
+    Description : text
+    Color : text
+    ContractorNumber : text
+    HourlyRate : decimal
+}
+
+entity "Invoice" as in {
+    *Id : int <<generated>>
+    --
+    *ClientId : int <<FK>>
+    ProjectId : int <<FK>>
+    InvoiceNumber: text
+    Description : text
+    CreatedDate : DateTime
+    DueDate : DateTime
+    BusinessName : text
+    BillingAddress : text
+    BillingContact : text
+}
+
+entity "InvoiceItem" as ii {
+    *Id : int <<generated>>
+    --
+    *InvoiceId : int <<FK>>
+    ActivityId : int <<FK>>
+    Description : text
+    Hours : decimal
+    Price : decimal
+}
+
+p  ||--o{ te
+p  |o--o{ a
+p  ||--o{ cp
+p  |o--o{ l
+p  |o--|{ in
+in ||--|| ii
+a  ||--o{ te
+te }o--|| u
+te }o--o{ i
+c  ||--o{ p
+c  ||--o{ cc
+c  |o--o{ a
+c  ||--o{ in
+i  }|--|{ l
+i  }o--|| p
+i  }o--|| u
+i  }o--o| u
+i  }o--o| cp
+
+@enduml
