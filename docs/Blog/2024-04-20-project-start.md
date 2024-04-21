@@ -21,7 +21,7 @@ the client can log in to view the status of the sprint's completion of user stor
 
 ## Architecture design decisions
 
-The system will be containerized with docker, consisting of a web-api, database, and frontend client. The architecture will be a clean architecture based on (this tmeplate)[https://github.com/jasontaylordev/CleanArchitecture/blob/main/README.md] 
+The system will be containerized with docker, consisting of a web-api, database, and frontend client. The architecture will be a clean architecture based on [this tmeplate](https://github.com/jasontaylordev/CleanArchitecture/blob/main/README.md) 
 modified with a vertical feature slice approach and domain driven design. The project will also be fully implemented using test driven development for automated testing.
 
 Clean architecture usually consists of the following layers: WebUI, Infrastructure, Application Core, and Domain. With the vertical feature slices approach those same layers are 

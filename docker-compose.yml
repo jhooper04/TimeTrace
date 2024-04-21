@@ -1,0 +1,39 @@
+version: '3.4'
+
+services:
+  api: 
+    image: timetrace-api
+    container_name: timetrace-api
+    build:
+      context: src/TimeTrace.Api
+      dockerfile: Dockerfile
+    ports:
+      - 5000:5000
+      - 5443:5443
+    depends_on:
+      - mariadb
+    networks:
+      - timetrace
+  mariadb:
+    image: mariadb:10.7
+    container_name: timetrace-mariadb
+    restart: unless-stopped
+#    ports:
+#      - 3306:3306
+    networks:
+      - timetrace
+    volumes:
+      - timetrace-mariadb:/var/lib/mysql:rw
+    environment:
+      - MYSQL_ROOT_PASSWORD=${_APP_DB_ROOT_PASS}
+      - MYSQL_DATABASE=${_APP_DB_SCHEMA}
+      - MYSQL_USER=${_APP_DB_USER}
+      - MYSQL_PASSWORD=${_APP_DB_PASS}
+    command: 'mysqld --innodb-flush-method=fsync'
+networks:
+  gateway:
+    name: gateway
+  timetrace:
+    name: timetrace
+volumes:
+  timetrace-mariadb:
