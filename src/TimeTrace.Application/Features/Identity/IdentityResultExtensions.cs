@@ -1,7 +1,7 @@
 ﻿using TimeTrace.Application.Common.Models;
 using Microsoft.AspNetCore.Identity;
 
-namespace TimeTrace.Infrastructure.Identity;
+namespace TimeTrace.Application.Features.Identity;
 
 public static class IdentityResultExtensions
 {

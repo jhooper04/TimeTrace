@@ -7,13 +7,13 @@ using Respawn;
 
 namespace TimeTrace.Application.FunctionalTests;
 
-public class SqlServerTestDatabase : ITestDatabase
+public class MySqlTestDatabase : ITestDatabase
 {
     private readonly string _connectionString = null!;
     private SqlConnection _connection = null!;
     private Respawner _respawner = null!;
 
-    public SqlServerTestDatabase()
+    public MySqlTestDatabase()
     {
         var configuration = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json")
@@ -32,7 +32,7 @@ public class SqlServerTestDatabase : ITestDatabase
         _connection = new SqlConnection(_connectionString);
 
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseSqlServer(_connectionString)
+            .UseMySQL(_connectionString)
             .Options;
 
         var context = new ApplicationDbContext(options);

@@ -4,10 +4,10 @@ using TimeTrace.Application.Common.Behaviours;
 using TimeTrace.Application.Common.Interfaces;
 using TimeTrace.Infrastructure.Data.Interceptors;
 using TimeTrace.Infrastructure.Data;
-using TimeTrace.Infrastructure.Identity;
 using TimeTrace.Domain.Constants;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using TimeTrace.Application.Features.Identity;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -36,6 +36,13 @@ public static class DependencyInjection
 
         Guard.Against.Null(connectionString, message: "Connection string 'DefaultConnection' not found.");
 
+        string[] envDbKeys = new string[] { "DB_SERVER", "DB_SCHEMA", "DB_USER", "DB_PASS" };
+
+        foreach (var envDbKey in envDbKeys)
+        {
+            connectionString = connectionString.Replace($"{{{envDbKey}}}", configuration.GetValue<string>(envDbKey) ?? "");
+        }
+
         services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
         services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
 
@@ -43,7 +50,7 @@ public static class DependencyInjection
         {
             options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
 
-            options.UseSqlServer(connectionString);
+            options.UseMySQL(connectionString);
         });
 
         services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());

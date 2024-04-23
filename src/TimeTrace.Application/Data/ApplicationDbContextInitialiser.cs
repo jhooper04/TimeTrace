@@ -1,12 +1,13 @@
 ﻿using System.Runtime.InteropServices;
 using TimeTrace.Domain.Constants;
 using TimeTrace.Domain.Entities;
-using TimeTrace.Infrastructure.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using TimeTrace.Application.Features.Identity;
+using TimeTrace.Domain.ValueObjects;
 
 namespace TimeTrace.Infrastructure.Data;
 
@@ -65,26 +66,107 @@ public class ApplicationDbContextInitialiser
         }
     }
 
+    private async Task _AddDefaultRole(string role)
+    {
+        var identityRole = new IdentityRole(role);
+
+        if (_roleManager.Roles.All(r => r.Name != identityRole.Name))
+        {
+            await _roleManager.CreateAsync(identityRole);
+        }
+    }
+
+    private async Task _AddDefaultUser(ApplicationUser user, string password, string[] roles)
+    {
+        if (_userManager.Users.All(u => u.UserName != user.UserName))
+        {
+            await _userManager.CreateAsync(user, password);
+            if (roles.Length > 0)
+            {
+                await _userManager.AddToRolesAsync(user, roles);
+            }
+        }
+    }
+
     public async Task TrySeedAsync()
     {
-        // Default roles
-        var administratorRole = new IdentityRole(Roles.Administrator);
-
-        if (_roleManager.Roles.All(r => r.Name != administratorRole.Name))
+        // Add Default roles
+        foreach (var roleProp in typeof(Roles).GetFields())
         {
-            await _roleManager.CreateAsync(administratorRole);
+            await _AddDefaultRole(roleProp.Name);
         }
 
-        // Default users
-        var administrator = new ApplicationUser { UserName = "administrator@localhost", Email = "administrator@localhost" };
+        // Add Default users
 
-        if (_userManager.Users.All(u => u.UserName != administrator.UserName))
+        List<(ApplicationUser User, string Password, string[] Roles)> defaultUsers = new() {
+            (new ApplicationUser { UserName = "admin@localhost", Email = "admin@localhost" }, "Administrator1!", new string[] { "Administrator" } ),
+            (new ApplicationUser { UserName = "manager@localhost", Email = "manager@localhost" }, "Manager1!", new string[] { "Manager" } ),
+            (new ApplicationUser { UserName = "contractor@localhost", Email = "contractor@localhost" }, "Contractor1!", new string[] { "Contractor" } ),
+            (new ApplicationUser { UserName = "client@localhost", Email = "client@localhost" }, "Client1!", new string[] { "Client" } ),
+        };
+        
+        foreach (var user in defaultUsers)
         {
-            await _userManager.CreateAsync(administrator, "Administrator1!");
-            if (!string.IsNullOrWhiteSpace(administratorRole.Name))
+            await _AddDefaultUser(user.User, user.Password, user.Roles);
+        }
+
+        if (!_context.Clients.Any())
+        {
+            var client = new Client
             {
-                await _userManager.AddToRolesAsync(administrator, new [] { administratorRole.Name });
-            }
+                Name = "Acme LLC",
+                BillingAddress = new Address("200 Acme RD", "San Antonio", "TX", "78114"),
+                Color = Color.Blue,
+                Contacts =
+                {
+                    new Contact { 
+                        FirstName="Roger", LastName="Smitherson", 
+                        Email="roger@acme.com", Fax="5553321010", Phone="5553322020", 
+                        Address = new Address("130 Acme RD", "San Antonio", "TX", "78114"),
+                    },
+                    new Contact { 
+                        FirstName="Dilon", LastName="Johnson", 
+                        Email="dilon@acme.com", Fax="5553323030", Phone="5553324040",
+                        Address = new Address("230 Someplace Ln", "San Antonio", "TX", "78114"),
+                    },
+                },
+                Projects =
+                {
+                    new Project { Name="Inventory Management System", Description="Stock inventory tracking system", Color=Color.Orange, 
+                        BudgetAmount=150_000, BudgetHours=2500, 
+                        OrderDate = new DateTime(2023, 10, 15), 
+                        ProjectBegin=new DateTime(2024, 1, 1), ProjectEnd=new DateTime(2024, 4, 1), 
+                        OrderNumber="1001", ProjectNumber="101",
+                        Components =
+                        {
+                            new Component { Name="Account", Description="User account management", Color=Color.Orange, BudgetHours=500, BudgetAmount=30_000 },
+                            new Component { Name="Purchase Order", Description="Purchase Ordering", Color=Color.Orange, BudgetHours=500, BudgetAmount=30_000 },
+                            new Component { Name="Deliveries", Description="Stock Delivery", Color=Color.Orange, BudgetHours=500, BudgetAmount=30_000 },
+                            new Component { Name="Adjustments", Description="Stock adjustments", Color=Color.Orange, BudgetHours=500, BudgetAmount=30_000 },
+                            new Component { Name="Reports", Description="Report generation system", Color=Color.Orange, BudgetHours=500, BudgetAmount=30_000 },
+                        },
+                    },
+                    new Project { Name="Ecommerce Store", Description="Ecommerce store", Color=Color.Purple,
+                        BudgetAmount=30_000, BudgetHours=500,
+                        OrderDate = new DateTime(2022, 4, 6),
+                        ProjectBegin=new DateTime(2023, 2, 1), ProjectEnd=new DateTime(2023, 4, 6),
+                        OrderNumber="1002", ProjectNumber="102",
+                        Components =
+                        {
+                            new Component { Name="Account", Description="User account management", Color=Color.Orange, BudgetHours=83, BudgetAmount=5_000 },
+                            new Component { Name="Cart", Description="Shopping cart", Color=Color.Orange, BudgetHours=83, BudgetAmount=5_000 },
+                            new Component { Name="Catalog", Description="Product catalog", Color=Color.Orange, BudgetHours=83, BudgetAmount=5_000 },
+                            new Component { Name="Orders", Description="Order Fulfillment", Color=Color.Orange, BudgetHours=83, BudgetAmount=5_000 },
+                            new Component { Name="Payments", Description="Payment", Color=Color.Orange, BudgetHours=83, BudgetAmount=5_000 },
+                            new Component { Name="Reports", Description="Report generation system", Color=Color.Orange, BudgetHours=83, BudgetAmount=5_000 },
+                        },
+                    },
+                },
+            };
+
+            _context.Clients.Add(client);
+
+            await _context.SaveChangesAsync();
         }
 
         // Default data

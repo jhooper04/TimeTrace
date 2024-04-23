@@ -20,4 +20,8 @@ public class Project : BaseAuditableEntity
     public DateTime ProjectEnd { get; set; }
     public int? BudgetAmount { get; set; }
     public int? BudgetHours { get; set; }
+
+    public ICollection<Component> Components { get; set; } = new List<Component>();
+    public ICollection<Label> SpecificLabels { get; set; } = new List<Label>();
+    public ICollection<Activity> SpecificActivities { get; set; } = new List<Activity>();
 }

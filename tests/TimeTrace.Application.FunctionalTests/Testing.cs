@@ -1,10 +1,10 @@
 ﻿using TimeTrace.Domain.Constants;
 using TimeTrace.Infrastructure.Data;
-using TimeTrace.Infrastructure.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using TimeTrace.Application.Features.Identity;
 
 namespace TimeTrace.Application.FunctionalTests;
 

@@ -1,4 +1,11 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
+using System.Text.Json.Serialization;
+using System;
 using TimeTrace.Infrastructure.Data;
+using TimeTrace.Infrastructure.Identity;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 

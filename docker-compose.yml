@@ -1,4 +1,4 @@
-version: '3.4'
+version: '3.9'
 
 services:
   api: 
@@ -14,6 +14,15 @@ services:
       - mariadb
     networks:
       - timetrace
+    environment:
+      - _APP_DB_SERVER
+      - _APP_DB_SCHEMA
+      - _APP_DB_USER
+      - _APP_DB_PASS
+      - _APP_FRONTEND_URL 
+      - _APP_BACKEND_URL
+      - _APP_AUTH_SIGNING_KEY 
+      - _APP_AUTH_DECRYPT_KEY 
   mariadb:
     image: mariadb:10.7
     container_name: timetrace-mariadb

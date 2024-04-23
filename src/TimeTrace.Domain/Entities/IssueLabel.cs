@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace TimeTrace.Domain.Entities;
-public class IssueLabel
+public class IssueLabel : BaseEntity
 {
     public int IssueId { get; set; }
     public Issue Issue { get; set; } = null!;
